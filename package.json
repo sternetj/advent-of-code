@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc --watch",
     "2018:1:1": "node dist/2018/Day1/index-1",
-    "2018:1:2": "node dist/2018/Day1/index-2"
+    "2018:1:2": "node dist/2018/Day1/index-2",
+    "2018:2:1": "node dist/2018/Day2/index-1",
+    "2018:2:2": "node dist/2018/Day2/index-2"
   },
   "repository": {
     "type": "git",
@@ -20,7 +22,9 @@
   },
   "homepage": "https://github.com/sternetj/advent-of-code#readme",
   "dependencies": {
+    "@types/lodash": "^4.14.118",
     "@types/node": "^10.12.11",
+    "lodash": "^4.17.11",
     "typescript": "^3.2.1"
   }
 }
