@@ -1,10 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-export function parseInput<T>(
-  format: (v: any) => T = v => v,
-  ...pathParts
-): T[] {
+export function parseInput<T>(format: (v: string) => T, ...pathParts): T[] {
   const file = parseString(...pathParts);
   return file.split("\n").map(format);
 }
