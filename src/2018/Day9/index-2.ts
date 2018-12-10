@@ -1,39 +1,68 @@
-function solve() {
-  const maxMarble = 70918 * 1000;
-  const players = 464;
+class ListNode<T> {
+  public next: ListNode<T>;
+  public previous: ListNode<T>;
+  constructor(public value: T) {
+    this.next = this;
+    this.previous = this;
+  }
+}
+class LinkedList<T> {
+  private head: ListNode<T>;
 
-  const board = [0, 1];
-  let currentMarble = 1;
-  let currentPlayer = 2;
-  let scores: { [id: number]: number } = {};
-
-  function getIndex(val: number) {
-    return (val + board.length) % board.length;
+  constructor(...items: T[]) {
+    this.head = new ListNode(items[0]);
+    items.slice(1).forEach(item => this.push(item));
   }
 
-  for (let player = 1; player <= players; player++) {
+  public push(v: T) {
+    let n = new ListNode(v);
+    n.previous = this.head;
+    n.next = this.head.next;
+    n.previous.next = n;
+    n.next.previous = n;
+    this.head = n;
+  }
+
+  public rotate(distance: number) {
+    while (distance < 0) {
+      this.head = this.head.previous;
+      distance++;
+    }
+    while (distance > 0) {
+      this.head = this.head.next;
+      distance--;
+    }
+  }
+
+  public pop() {
+    const currentNode = this.head;
+    this.head = currentNode.previous;
+    this.head.next = currentNode.next;
+    return currentNode.value;
+  }
+}
+
+function solve(players, maxMarble) {
+  const board = new LinkedList(0);
+  let scores: { [id: number]: number } = {};
+
+  for (let player = 0; player < players; player++) {
     scores[player] = 0;
   }
 
-  for (let marble = 2; marble <= maxMarble; marble++) {
+  for (let marble = 1; marble <= maxMarble; marble++) {
     if (marble % 23 === 0) {
-      scores[currentPlayer] += marble;
-      currentMarble = getIndex(currentMarble - 7);
-      scores[currentPlayer] += board.splice(currentMarble, 1)[0];
+      scores[marble % players] += marble;
+      board.rotate(-7);
+      scores[marble % players] += board.pop();
+      board.rotate(1);
     } else {
-      currentMarble += 2;
-      if (board.length === currentMarble) {
-        board.push(marble);
-      } else {
-        currentMarble = getIndex(currentMarble);
-        board.splice(currentMarble, 0, marble);
-      }
+      board.rotate(1);
+      board.push(marble);
     }
 
-    currentPlayer = Math.max((currentPlayer + 1) % (players + 1), 1);
-
     if (marble % 70918 === 0) {
-      console.log(`${marble / (maxMarble * 1.0)}%`);
+      console.log(`${(marble / (maxMarble * 1.0)) * 100}%`);
     }
   }
 
@@ -42,4 +71,4 @@ function solve() {
   console.log(winningScore);
 }
 
-solve();
+solve(464, 70918 * 100);
