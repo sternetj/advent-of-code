@@ -5,12 +5,12 @@ enum Direction {
   Up = "^",
   Down = "v",
   Left = "<",
-  Right = ">"
+  Right = ">",
 }
 enum Turn {
   Left,
   Straight,
-  Right
+  Right,
 }
 
 class Cart {
@@ -18,7 +18,7 @@ class Cart {
   constructor(
     public id: number,
     public currentSegment: TrackSegment,
-    public direction: Direction
+    public direction: Direction,
   ) {}
 }
 
@@ -66,7 +66,9 @@ class TrackSegment {
   let input = parseInput(
     v => v.replace("\r", "").split(""),
     __dirname,
-    "input.test.txt"
+    // "input.test.txt",
+    // "input.test.1.txt",
+    "input.txt",
   );
   let map: { [key: string]: TrackSegment } = {};
   let carts: Cart[] = [];
@@ -114,12 +116,14 @@ class TrackSegment {
     }
   };
 
-  const isAllowedMove = (a: TrackSegment, b: TrackSegment) => {
-    let dir = getDirectionFrom(a, b);
-    let path = `${a.symbol}${b.symbol}`;
+  const isAllowedMove = (
+    from: TrackSegment,
+    to: TrackSegment,
+    dir: Direction,
+  ) => {
+    let path = `${from.symbol}${to.symbol}`;
 
     switch (dir) {
-      case Direction.Left:
       case Direction.Right:
         return [
           "-/",
@@ -130,12 +134,11 @@ class TrackSegment {
           "+/",
           "\\-",
           "\\+",
-          "\\\\",
-          "\\/",
+          "/-",
+          "/+",
           "--",
-          "++"
+          "++",
         ].includes(path);
-      case Direction.Up:
       case Direction.Down:
         return [
           "|/",
@@ -146,31 +149,29 @@ class TrackSegment {
           "+/",
           "\\|",
           "\\+",
-          "\\\\",
-          "\\/",
+          "/|",
+          "/+",
           "||",
-          "++"
+          "++",
         ].includes(path);
       default:
         return false;
     }
   };
 
-  const next = (c: Cart) => {};
-
   const createTrackSegment = (x: number, y: number, symbol: string) => {
     let segment = new TrackSegment(
       x,
       y,
-      symbol.replace(/[><]/, "-").replace(/[v^]/, "|")
+      symbol.replace(/[><]/, "-").replace(/[v^]/, "|"),
     );
     [
-      { x: segment.x - 1, y: segment.y }, // Left
-      { x: segment.x, y: segment.y - 1 } // Up
-    ].forEach(({ x, y }) => {
+      { x: segment.x - 1, y: segment.y, direction: Direction.Right },
+      { x: segment.x, y: segment.y - 1, direction: Direction.Down },
+    ].forEach(({ x, y, direction }) => {
       let neighbor = map[`${x},${y}`];
       if (neighbor) {
-        if (isAllowedMove(segment, neighbor)) {
+        if (isAllowedMove(neighbor, segment, direction)) {
           neighbor.attachedTo.push(segment);
           segment.attachedTo.push(neighbor);
         }
@@ -195,7 +196,10 @@ class TrackSegment {
   }
 
   Object.values(map).forEach(segment => {
-    if (segment.attachedTo.length != 2 && segment.attachedTo.length != 4) {
+    if (
+      (segment.attachedTo.length != 2 && segment.attachedTo.length != 4) ||
+      (segment.symbol === "+" && segment.attachedTo.length != 4)
+    ) {
       console.log(segment);
     }
   });
@@ -204,9 +208,10 @@ class TrackSegment {
   while (!exit) {
     let currentPositions = {};
     carts = sortBy(carts, "currentSegment.y", "currentSegment.x");
+    carts.forEach(cart => (currentPositions[cart.currentSegment.id] = cart));
     for (const cart of carts) {
       let currentPos = cart.currentSegment.id;
-      currentPositions[currentPos] = cart;
+      delete currentPositions[currentPos];
       if (cart.currentSegment.isHub) {
         switch (cart.previousTurn) {
           case Turn.Left:
@@ -236,6 +241,3 @@ class TrackSegment {
     }
   }
 })();
-
-// 20,109
-// 101,112
