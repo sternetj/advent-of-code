@@ -7,7 +7,7 @@ class ListNode<T> {
   }
 }
 class LinkedList<T> {
-  private head: ListNode<T>;
+  public head: ListNode<T>;
 
   constructor(...items: T[]) {
     this.head = new ListNode(items[0]);
