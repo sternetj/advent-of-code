@@ -16,7 +16,7 @@ if (parts.length === 2) {
   parts.splice(0, 0, new Date().getFullYear().toString());
 }
 
-const scriptName = `./${parts[0]}/Day${parts[1]}/index-${parts[2]}.js`;
+const scriptName = `./${parts[0]}/Day${parts[1]}/index-${parts[2]}.ts`;
 
 console.log(`Running ${scriptName}`);
 require(scriptName);
