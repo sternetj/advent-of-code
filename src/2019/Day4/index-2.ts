@@ -1,34 +1,35 @@
-import { parseInput } from "../../util/parse-input";
+(function() {
+  const lower = 168630;
+  const higher = 718098;
 
-const origInput = parseInput(Number, __dirname, "input.txt");
+  let matching = 0;
 
-for (let noun = 0; noun <= 99; noun++) {
-  for (let verb = 0; verb <= 99; verb++) {
-    const input = origInput.slice();
-    input[1] = noun;
-    input[2] = verb;
+  const hasDoubleDigit = (key: string) =>
+    key
+      .match(/(11+|22+|33+|44+|55+|66+|77+|88+|99+|00+)/g)
+      ?.some(v => v.length === 2);
+  const nextNumber = (num: number) => {
+    const newNum = num
+      .toString()
+      .split("")
+      .map(Number);
 
-    for (let i = 0; i < input.length; i += 4) {
-      const code = input[i];
-      const valA = input[input[i + 1]];
-      const valB = input[input[i + 2]];
+    newNum.forEach((v, i) => {
+      const prev = +newNum[i - 1] ?? 0;
+      newNum[i] = v < prev ? prev : v;
+    });
 
-      switch (code) {
-        case 1:
-          input[input[i + 3]] = valA + valB;
-          continue;
-        case 2:
-          input[input[i + 3]] = valA * valB;
-          continue;
-      }
-      break;
+    return +newNum.join("");
+  };
+
+  for (let i = nextNumber(lower); i <= higher; i = nextNumber(i)) {
+    const numStr = i.toString();
+    if (hasDoubleDigit(numStr)) {
+      matching++;
     }
 
-    const output = input[0];
-
-    if (output === 19690720) {
-      console.log(100 * noun + verb);
-      process.exit(0);
-    }
+    i += 1;
   }
-}
+
+  console.log(matching);
+})();
