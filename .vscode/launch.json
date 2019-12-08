@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch",
-      "program": "${workspaceFolder}\\dist\\src\\2019\\Day5\\index-2"
+      "program": "${workspaceFolder}\\dist\\src\\2019\\Day6\\index-1"
     }
   ]
 }
