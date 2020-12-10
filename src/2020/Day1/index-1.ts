@@ -2,6 +2,11 @@ import { parseInput } from "../../util/parse-input";
 
 const input = parseInput(Number, __dirname, "input.txt");
 
-const result = input.map(v => Math.floor(v / 3 - 2)).reduce((a, b) => a + b, 0);
-
-console.log(result);
+for (let i = 0; i < input.length; i++) {
+  for (let j = 1; j < input.length; j++) {
+    if (input[i] + input[j] === 2020) {
+      console.log(input[i] * input[j]);
+      process.exit(0);
+    }
+  }
+}

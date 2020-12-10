@@ -2,14 +2,13 @@ import { parseInput } from "../../util/parse-input";
 
 const input = parseInput(Number, __dirname, "input.txt");
 
-function fuelCost(cost: number) {
-  const result = Math.floor(cost / 3) - 2;
-
-  if (result <= 0) return 0;
-
-  return result + fuelCost(result);
+for (let i = 0; i < input.length; i++) {
+  for (let j = i + 1; j < input.length; j++) {
+    for (let k = j + 1; k < input.length; k++) {
+      if (input[i] + input[j] + input[k] === 2020) {
+        console.log(input[i] * input[j] * input[k]);
+        process.exit(0);
+      }
+    }
+  }
 }
-
-const result = input.map(fuelCost).reduce((a, b) => a + b, 0);
-
-console.log(result);
