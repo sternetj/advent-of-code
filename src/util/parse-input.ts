@@ -6,7 +6,10 @@ export function parseInput<T>(
   ...pathParts
 ): T[] {
   const file = parseString(...pathParts);
-  return file.split("\n").map(format);
+  return file
+    .split("\n")
+    .map((v) => v.trim())
+    .map(format);
 }
 
 export function parseString(...pathParts): string {
