@@ -2,7 +2,7 @@ let scriptToRun = process.argv[2];
 
 if (!scriptToRun) {
   throw Error(
-    "Must provide a script identifier [year?:day?:puzzle] (ex. 2018:3:1, 3:1, 1)"
+    "Must provide a script identifier [year?:day?:puzzle] (ex. 2018:3:1, 3:1, 1)",
   );
 }
 
@@ -20,3 +20,5 @@ const scriptName = `./${parts[0]}/Day${parts[1]}/index-${parts[2]}.ts`;
 
 console.log(`Running ${scriptName}`);
 require(scriptName);
+
+export {};
