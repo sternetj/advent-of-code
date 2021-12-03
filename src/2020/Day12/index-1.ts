@@ -1,4 +1,3 @@
-import { xor } from "lodash";
 import { parseInput } from "../../util/parse-input";
 
 const input = parseInput(
