@@ -9,6 +9,7 @@ export function parseInput<T>(
   return file
     .split("\n")
     .map((v) => v.trim())
+    .filter((v) => !!v)
     .map(format);
 }
 
