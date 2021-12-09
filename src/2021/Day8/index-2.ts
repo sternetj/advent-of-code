@@ -1,28 +1,24 @@
 import { parseInput } from "../../util/parse-input";
-import { intersection } from "lodash";
+import { sum, intersection, difference } from "lodash";
 
 const input = parseInput(
   (l) => {
     const [signals, output] = l.split("|").map((t) => t.trim());
     return {
-      signals: signals.split(" ").map((v) => v.split("").sort()),
-      output: output.split(" ").map((v) => v.split("").sort()),
+      signals: signals.split(" ").map((v) => v.split("")),
+      output: output.split(" ").map((v) => v.split("")),
     };
   },
   __dirname,
-  "test.txt"
+  "input.txt",
 );
 
 type SignalNotes = typeof input[number];
 
-const computeOutputValue = (data: SignalNotes) => {
-  // 7 => 8
-  // 5 => 5, 2, 3
-  // 3 => 7
-  // 6 => 9, 6, 0
-  // 4 => 4
-  // 2 => 1
+const diff = (a: any[], b: any[]) => difference(a, b).length;
+const intsec = (a: any[], b: any[]) => intersection(a, b).length;
 
+const computeOutputValue = (data: SignalNotes) => {
   const signals = data.signals;
 
   const one = signals.find((v) => v.length === 2);
@@ -33,59 +29,35 @@ const computeOutputValue = (data: SignalNotes) => {
   const sixSegmentNums = signals.filter((v) => v.length === 6);
   const fiveSegmentNums = signals.filter((v) => v.length === 5);
 
-  const six = sixSegmentNums.find(
-    (wire) => intersection(one, wire).length === 1
-  );
+  const nine = sixSegmentNums.find((wire) => intsec(four, wire) === 4);
 
   const zero = sixSegmentNums.find(
-    (wire) => intersection(four, wire).length === 3
+    (wire) => wire !== nine && intsec(seven, wire) === 3,
   );
 
-  const nine = sixSegmentNums.find(
-    (wire) => wire.join("") !== zero.join("") && wire.join("") !== six.join("")
-  );
+  const six = sixSegmentNums.find((wire) => wire !== nine && wire !== zero);
 
-  const three = fiveSegmentNums.find(
-    (wire) => intersection(one, wire).length === 2
-  );
+  const three = fiveSegmentNums.find((wire) => intsec(one, wire) === 2);
 
-  const five = fiveSegmentNums.find(
-    (wire) => intersection(six, wire).length === 5
-  );
+  const five = fiveSegmentNums.find((wire) => intsec(six, wire) === 5);
 
   const two = fiveSegmentNums.find((wire) => wire !== five && wire !== three);
 
-  console.log(zero);
-  console.log(one);
-  console.log(two);
-  console.log(three);
-  console.log(four);
-  console.log(five);
-  console.log(six);
-  console.log(seven);
-  console.log(eight);
-  console.log(nine);
+  return +data.output
+    .map((num) => {
+      if (diff(num, zero) === 0 && diff(zero, num) === 0) return 0;
+      if (diff(num, one) === 0 && diff(one, num) === 0) return 1;
+      if (diff(num, two) === 0 && diff(two, num) === 0) return 2;
+      if (diff(num, three) === 0 && diff(three, num) === 0) return 3;
+      if (diff(num, four) === 0 && diff(four, num) === 0) return 4;
+      if (diff(num, five) === 0 && diff(five, num) === 0) return 5;
+      if (diff(num, six) === 0 && diff(six, num) === 0) return 6;
+      if (diff(num, seven) === 0 && diff(seven, num) === 0) return 7;
+      if (diff(num, eight) === 0 && diff(eight, num) === 0) return 8;
 
-  return data.output
-    .map((v) => {
-      const num = v.join("");
-      if (num === zero.join("")) return 0;
-      if (num === one.join("")) return 1;
-      if (num === two.join("")) return 2;
-      if (num === three.join("")) return 3;
-      if (num === four.join("")) return 4;
-      if (num === five.join("")) return 5;
-      if (num === six.join("")) return 6;
-      if (num === seven.join("")) return 7;
-      if (num === eight.join("")) return 8;
-      if (num === nine.join("")) return 9;
-
-      console.log(num);
-
-      return "X";
+      return 9;
     })
     .join("");
 };
 
-// console.log(sum(input.map(computeOutputValue)));
-console.log(input.slice(1, 2).map(computeOutputValue));
+console.log(sum(input.map(computeOutputValue)));
