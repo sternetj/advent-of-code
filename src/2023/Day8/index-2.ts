@@ -18,28 +18,26 @@ const getEndingPeriods = (spot: string) => {
   let currentSpot = spot;
   let visited = [];
 
-  while (!seen[`${currentSpot}|${currentStep % dirs.length}`]) {
+  while (
+    !seen[`${currentSpot}|${currentStep % dirs.length}`] ||
+    !currentSpot.endsWith("Z")
+  ) {
     seen[`${currentSpot}|${currentStep % dirs.length}`] = true;
     visited.push(currentSpot);
 
     currentSpot = map[currentSpot][dirs[currentStep % dirs.length]];
     currentStep++;
   }
+  visited.push(currentSpot);
 
-  //find first instance of currentSpot
-  // find all Zs inside - or outside?
-  // return base (initial currentSpot) and periods
-  const base = visited.indexOf(currentSpot);
-
-  return {
-    base: base - 1,
-    period: visited
-      .slice(base)
-      .map((v, i) => (v.endsWith("Z") ? i + 1 : -1))
-      .find((v) => v > -1),
-  };
+  return visited.indexOf(currentSpot);
 };
 
 let spots = Object.keys(map).filter((k) => k.endsWith("A"));
 let periods = spots.map(getEndingPeriods);
-console.log(periods);
+
+type NumFunc = (a: number, b: number) => number;
+const gcd: NumFunc = (a, b) => (b == 0 ? a : gcd(b, a % b));
+const lcm: NumFunc = (a = 1, b = 1) => (a / gcd(a, b)) * b;
+
+console.log(periods.reduce(lcm));
