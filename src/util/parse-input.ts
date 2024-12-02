@@ -26,5 +26,8 @@ export function parseInputWithBreaks<T>(
 }
 
 export function parseString(...pathParts): string {
+  if (!pathParts.length) {
+    pathParts.push(process.env.INPUT);
+  }
   return fs.readFileSync(path.join(...pathParts).replace("dist", ""), "utf-8");
 }
