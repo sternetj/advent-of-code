@@ -25,6 +25,21 @@ export function parseInputWithBreaks<T>(
     .filter((v) => !!v) as Exclude<T, "" | undefined | false>[];
 }
 
+export function parseSections<T1, T2>(
+  format: (v: string, index?: number) => T1,
+  format2: (v: string, index?: number) => T2,
+): [T1[], T2[]] {
+  const file = parseString();
+  let processedData = file.split("\n").map((v) => v.trim());
+  const index = processedData.findIndex((v) => v === "");
+  processedData = processedData.filter((v) => v !== "");
+
+  return [
+    processedData.slice(0, index).map(format),
+    processedData.slice(index).map(format2),
+  ];
+}
+
 export function parseString(...pathParts): string {
   if (!pathParts.length) {
     pathParts.push(process.env.INPUT);
