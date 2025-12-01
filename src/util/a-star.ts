@@ -5,7 +5,7 @@ type Config<T> = {
   end: number[];
   map: T[][];
   isValidSpace: (space: T) => boolean;
-  heuristic: (next: number[]) => number;
+  heuristic: (next: number[], getPathSoFar: () => number[][]) => number;
 };
 
 export const aStar = <T>(config: Config<T>) => {
@@ -19,6 +19,14 @@ export const aStar = <T>(config: Config<T>) => {
   const cameFrom = {};
   const gScore = { [key(start)]: 0 };
 
+  function* getParent(current: number[]) {
+    while (cameFrom[key(current)]) {
+      yield current;
+      current = cameFrom[key(current)];
+    }
+    yield current;
+  }
+
   while (toProcess.length) {
     let current = toProcess.reduce((minI, p) => {
       if (gScore[key(p)] < gScore[key(minI)]) return p;
@@ -26,12 +34,7 @@ export const aStar = <T>(config: Config<T>) => {
     }, toProcess[0]);
 
     if (current[0] === end[0] && current[1] === end[1]) {
-      const path = [current];
-      while (cameFrom[key(current)]) {
-        path.unshift(cameFrom[key(current)]);
-        current = cameFrom[key(current)];
-      }
-      return path;
+      return Array.from(getParent(current)).reverse();
     }
 
     toProcess.splice(toProcess.indexOf(current), 1);
@@ -44,7 +47,9 @@ export const aStar = <T>(config: Config<T>) => {
     ]) {
       const next = [current[0] + dx, current[1] + dy];
       if (!isValidSpace(map[next[1]]?.[next[0]])) continue;
-      const newGScore = gScore[key(current)] + heuristic(next);
+      const newGScore =
+        gScore[key(current)] +
+        heuristic(next, () => Array.from(getParent(current)).concat([next]));
       if (newGScore < (gScore[key(next)] ?? Infinity)) {
         cameFrom[key(next)] = current;
         gScore[key(next)] = newGScore;
