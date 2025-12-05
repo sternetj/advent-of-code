@@ -25,6 +25,27 @@ export function parseInputWithBreaks<T>(
     .filter((v) => !!v) as Exclude<T, "" | undefined | false>[];
 }
 
+export function parseInputSections<T, U>(
+  formatters: [
+    (v: string, index?: number) => T,
+    (v: string, index?: number) => U,
+  ],
+  ...pathParts
+): [T[], U[]] {
+  const file = parseString(...pathParts);
+  const sections: [T[], U[]] = [[], []];
+  let sectionIndex = 0;
+  file
+    .split("\n")
+    .map((v) => v.trim())
+    .forEach((value, index) => {
+      if (value === "") return sectionIndex++;
+      let res = formatters[sectionIndex](value, index);
+      if (!!res) sections[sectionIndex].push(res as any);
+    });
+  return sections;
+}
+
 export function parseSections<T1, T2>(
   format: (v: string, index?: number) => T1,
   format2: (v: string, index?: number) => T2,
